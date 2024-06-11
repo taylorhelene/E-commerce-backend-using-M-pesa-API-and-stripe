@@ -87,3 +87,10 @@ const initiatePayment = async (accessToken, paymentRequest) => {
       throw error;
     }
 }
+
+router.post('/payment-callback', (req, res) => {
+    // Handle payment callback logic here
+    // Verify the payment and update your application's records
+    // Respond with a success message
+    res.status(200).send('Payment received and processed.');
+  });
