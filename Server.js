@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 const port = process.env.PORT || 3000
+const app = express();
 
 
 // Function to generate a timestamp (format: YYYYMMDDHHmmss)
@@ -94,3 +95,7 @@ router.post('/payment-callback', (req, res) => {
     // Respond with a success message
     res.status(200).send('Payment received and processed.');
   });
+
+  app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
+  })
