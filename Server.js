@@ -31,12 +31,30 @@ const generateAccessToken = async (consumerKey, consumerSecret) => {
         },
       });
 
-      console.log(response.json().access_token)
-      return response.json().access_token;
+      return response.data.access_token;
     } catch (error) {
       throw error;
     }
   };
+
+   // Function to initiate the Lipa Na M-Pesa payment
+const initiatePayment = async (accessToken, paymentRequest) => {
+    try {
+      const response = await axios.post(
+        'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
+        paymentRequest,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+        console.error(accessToken)
+      throw error;
+    }
+}
 
 
 // Endpoint to initiate a Lipa Na M-Pesa Online Payment
@@ -73,23 +91,7 @@ router.post('/lipa', async (req, res) => {
     }
   });
   
-  // Function to initiate the Lipa Na M-Pesa payment
-const initiatePayment = async (accessToken, paymentRequest) => {
-    try {
-      const response = await axios.post(
-        'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
-        paymentRequest,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-}
+ 
 
 router.post('/payment-callback', (req, res) => {
     // Handle payment callback logic here
@@ -132,7 +134,11 @@ fetch("https://sandbox.safaricom.co.ke/v1/ussdpush/get-msisdn", {
   .then(result => console.log(result))
   .catch(error => console.log(error));
 
-  app.listen(port, () => {
+ app.listen(port, async() => {
     console.log(`Example app listening on port ${port}`)
+
+    var accessToken = await generateAccessToken(consumerKey, consumerSecret);
+    
+    console.log(accessToken)
 
   })
