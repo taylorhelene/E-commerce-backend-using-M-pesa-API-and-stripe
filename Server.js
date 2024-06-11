@@ -108,17 +108,29 @@ router.post('/payment-callback', (req, res) => {
     securityCredential: '<credential here>',
     certPath: path.resolve('SandboxCertificate.cer')
 })
-const {
-    b2b
-  } = mpesaApi
 
-const { shortCode } = mpesaApi.configs
-const testShortcode2 = 600000
-let ans = b2b(shortCode, testShortcode2, 100, URL + '/b2b/timeout', URL + '/b2b/success').then( resp=> resp)
+let headers = new Headers();
+headers.append("Content-Type", "application/json");
+headers.append("Authorization", "Bearer GWhQvvQmfa0e89i0VCcbTqGqhFau");
 
+fetch("https://sandbox.safaricom.co.ke/v1/ussdpush/get-msisdn", {
+  method: 'POST',
+  headers,
+  body: JSON.stringify({
+    "primaryShortCode": "7318002",
+    "receiverShortCode": "174379",
+    "amount": 10,
+    "paymentRef": "TestAccount",
+    "callbackUrl": "https://mydomain.com/b2b-express-checkout/",
+    "partnerName": "Test",
+    "RequestRefID": "ODk4O-Tk4NWU4O-DQ66HD-D4OThkY",
+  })
+})
+  .then(response => response.text())
+  .then(result => console.log(result))
+  .catch(error => console.log(error));
 
   app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 
-    console.log(ans)
   })
