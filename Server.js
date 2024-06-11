@@ -30,7 +30,9 @@ const generateAccessToken = async (consumerKey, consumerSecret) => {
           password: consumerSecret,
         },
       });
-      return response.data.access_token;
+
+      console.log(response.json().access_token)
+      return response.json().access_token;
     } catch (error) {
       throw error;
     }
@@ -41,7 +43,7 @@ const generateAccessToken = async (consumerKey, consumerSecret) => {
 router.post('/lipa', async (req, res) => {
     try {
       // Generate an access token for authentication
-      const accessToken = await generateAccessToken(consumerKey, consumerSecret);
+      var accessToken = await generateAccessToken(consumerKey, consumerSecret);
   
       // Create the payment request
       const paymentRequest = {
@@ -49,10 +51,10 @@ router.post('/lipa', async (req, res) => {
         Password: 'Safaricom999!*!', // Generate this using Daraja documentation
         Timestamp: generateTimestamp(), // Format: YYYYMMDDHHmmss
         TransactionType: 'CustomerPayBillOnline',
-        Amount: req.body.amount,
-        PartyA: req.body.phone, // Customer's phone number
+        Amount: 10,
+        PartyA: 254701759744, // Customer's phone number
         PartyB: '600000',
-        PhoneNumber: req.body.phone,
+        PhoneNumber: 254701759744,
         CallBackURL: 'https://mydomain.com/b2b-express-checkout/',
         AccountReference: 'YOUR_ORDER_ID',
         TransactionDesc: 'Payment for Order',
@@ -75,7 +77,7 @@ router.post('/lipa', async (req, res) => {
 const initiatePayment = async (accessToken, paymentRequest) => {
     try {
       const response = await axios.post(
-        'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
+        'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
         paymentRequest,
         {
           headers: {
