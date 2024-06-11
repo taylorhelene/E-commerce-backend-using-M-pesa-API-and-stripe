@@ -95,7 +95,30 @@ router.post('/payment-callback', (req, res) => {
     // Respond with a success message
     res.status(200).send('Payment received and processed.');
   });
+  const path = require('path');
+  const Mpesa = require('mpesa-node');
+  const mpesaApi = new Mpesa({
+    consumerKey: consumerKey,
+    consumerSecret: consumerSecret,
+    environment: 'sandbox',
+    shortCode: '600111',
+    initiatorName: 'Test Initiator',
+    lipaNaMpesaShortCode: 123456,
+    lipaNaMpesaShortPass: '<some key here>',
+    securityCredential: '<credential here>',
+    certPath: path.resolve('SandboxCertificate.cer')
+})
+const {
+    b2b
+  } = mpesaApi
+
+const { shortCode } = mpesaApi.configs
+const testShortcode2 = 600000
+let ans = b2b(shortCode, testShortcode2, 100, URL + '/b2b/timeout', URL + '/b2b/success').then( resp=> resp)
+
 
   app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
+
+    console.log(ans)
   })
