@@ -24,7 +24,7 @@ const consumerSecret = '6AFzzzGcsnXrcV1G';
 // Function to generate an access token
 const generateAccessToken = async (consumerKey, consumerSecret) => {
     try {
-      const response = await axios.get('https://api.safaricom.co.ke/oauth/v1/generate', {
+      const response = await axios.get('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials', {
         auth: {
           username: consumerKey,
           password: consumerSecret,
