@@ -15,3 +15,75 @@ const generateTimestamp = () => {
   const seconds = String(now.getSeconds()).padStart(2, '0');
   return `${year}${month}${day}${hours}${minutes}${seconds}`;
 };
+
+// Daraja API credentials
+const consumerKey = 'LgdXPNQiI3kJlzXdy1WmH0yKGA8MgSqf';
+const consumerSecret = '6AFzzzGcsnXrcV1G';
+
+// Function to generate an access token
+const generateAccessToken = async (consumerKey, consumerSecret) => {
+    try {
+      const response = await axios.get('https://api.safaricom.co.ke/oauth/v1/generate', {
+        auth: {
+          username: consumerKey,
+          password: consumerSecret,
+        },
+      });
+      return response.data.access_token;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+
+// Endpoint to initiate a Lipa Na M-Pesa Online Payment
+router.post('/lipa', async (req, res) => {
+    try {
+      // Generate an access token for authentication
+      const accessToken = await generateAccessToken(consumerKey, consumerSecret);
+  
+      // Create the payment request
+      const paymentRequest = {
+        BusinessShortCode: 'YOUR_BUSINESS_SHORTCODE',
+        Password: 'YOUR_PASSWORD', // Generate this using Daraja documentation
+        Timestamp: generateTimestamp(), // Format: YYYYMMDDHHmmss
+        TransactionType: 'CustomerPayBillOnline',
+        Amount: req.body.amount,
+        PartyA: req.body.phone, // Customer's phone number
+        PartyB: 'YOUR_BUSINESS_SHORTCODE',
+        PhoneNumber: req.body.phone,
+        CallBackURL: 'YOUR_CALLBACK_URL',
+        AccountReference: 'YOUR_ORDER_ID',
+        TransactionDesc: 'Payment for Order',
+      };
+  
+      // Make the payment request
+      const paymentResponse = await initiatePayment(accessToken, paymentRequest);
+  
+      // Handle the payment response as needed
+      console.log(paymentResponse);
+  
+      res.status(200).json({ message: 'Payment initiated successfully', data: paymentResponse });
+    } catch (error) {
+      console.error('Error initiating payment:', error);
+      res.status(500).json({ message: 'Payment initiation failed' });
+    }
+  });
+  
+  // Function to initiate the Lipa Na M-Pesa payment
+const initiatePayment = async (accessToken, paymentRequest) => {
+    try {
+      const response = await axios.post(
+        'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
+        paymentRequest,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+}
