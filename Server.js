@@ -44,15 +44,15 @@ router.post('/lipa', async (req, res) => {
   
       // Create the payment request
       const paymentRequest = {
-        BusinessShortCode: 'YOUR_BUSINESS_SHORTCODE',
-        Password: 'YOUR_PASSWORD', // Generate this using Daraja documentation
+        BusinessShortCode: '174379',
+        Password: 'Safaricom999!*!', // Generate this using Daraja documentation
         Timestamp: generateTimestamp(), // Format: YYYYMMDDHHmmss
         TransactionType: 'CustomerPayBillOnline',
         Amount: req.body.amount,
         PartyA: req.body.phone, // Customer's phone number
-        PartyB: 'YOUR_BUSINESS_SHORTCODE',
+        PartyB: '600000',
         PhoneNumber: req.body.phone,
-        CallBackURL: 'YOUR_CALLBACK_URL',
+        CallBackURL: 'https://mydomain.com/b2b-express-checkout/',
         AccountReference: 'YOUR_ORDER_ID',
         TransactionDesc: 'Payment for Order',
       };
