@@ -43,8 +43,9 @@ const generateAccessToken = async (consumerKey, consumerSecret) => {
  
   const getToken = ()=>{
     let unirest = require('unirest');
+    const base64String = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
     let req = unirest('GET', 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials')
-              .headers({ 'Authorization': 'Bearer cFJZcjZ6anEwaThMMXp6d1FETUxwWkIzeVBDa2hNc2M6UmYyMkJmWm9nMHFRR2xWOQ==' })
+              .headers({ 'Authorization': `Basic ${base64String}` })
               .send()
               .end(res => {
 	              if (res.error) throw new Error(res.error);
