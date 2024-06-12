@@ -49,8 +49,12 @@ const generateAccessToken = async (consumerKey, consumerSecret) => {
               .send()
               .end(res => {
 	              if (res.error) throw new Error(res.error);
+
 	                console.log(res.raw_body);
+                  return res.raw_body.access_token;
                 });
+
+                return req;
   }
 
    // Function to initiate the Lipa Na M-Pesa payment
@@ -78,11 +82,14 @@ router.post('/lipa', async (req, res) => {
     try {
       // Generate an access token for authentication
       var accessToken = await generateAccessToken(consumerKey, consumerSecret);
+
+      let tokken = getToken();
+      const base64Stringg = Buffer.from(`174379+bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919+${generateTimestamp()}`).toString('base64');
   
       // Create the payment request
       const paymentRequest = {
         BusinessShortCode: '174379',
-        Password: 'Safaricom999!*!', // Generate this using Daraja documentation
+        Password: base64Stringg, // Generate this using Daraja documentation
         Timestamp: generateTimestamp(), // Format: YYYYMMDDHHmmss
         TransactionType: 'CustomerPayBillOnline',
         Amount: 10,
@@ -95,7 +102,7 @@ router.post('/lipa', async (req, res) => {
       };
   
       // Make the payment request
-      const paymentResponse = await initiatePayment(accessToken, paymentRequest);
+      const paymentResponse = await initiatePayment(tokken, paymentRequest);
   
       // Handle the payment response as needed
       console.log(paymentResponse);
@@ -117,6 +124,7 @@ router.post('/payment-callback', (req, res) => {
   });
   const path = require('path');
   const Mpesa = require('mpesa-node');
+const { get } = require('https');
   const mpesaApi = new Mpesa({
     consumerKey: consumerKey,
     consumerSecret: consumerSecret,
@@ -152,11 +160,6 @@ fetch("https://sandbox.safaricom.co.ke/v1/ussdpush/get-msisdn", {
 
  app.listen(port, async() => {
     console.log(`Example app listening on port ${port}`)
-
-    var accessToken = await generateAccessToken(consumerKey, consumerSecret);
-
     console.log(getToken())
-    
-    console.log(accessToken)
-
+   
   })
