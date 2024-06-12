@@ -18,8 +18,8 @@ const generateTimestamp = () => {
 };
 
 // Daraja API credentials
-const consumerKey = 'LgdXPNQiI3kJlzXdy1WmH0yKGA8MgSqf';
-const consumerSecret = '6AFzzzGcsnXrcV1G';
+const consumerKey = 'GXVXdmAolMQOW6oIEl8kSG2gkI4n3kA10V0kGe0K1SARlUxG';
+const consumerSecret = 'mFbhEAJiDwiDZfqUABjBTEfDgIkZWNch89SLJCcAfVfyAsGEigjJA8el2A7c7Ee7';
 
 // Function to generate an access token
 const generateAccessToken = async (consumerKey, consumerSecret) => {
@@ -160,6 +160,4 @@ fetch("https://sandbox.safaricom.co.ke/v1/ussdpush/get-msisdn", {
 
  app.listen(port, async() => {
     console.log(`Example app listening on port ${port}`)
-    console.log(getToken())
-   
   })
