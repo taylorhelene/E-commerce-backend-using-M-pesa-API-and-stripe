@@ -3,6 +3,7 @@ const router = express.Router();
 const axios = require('axios');
 const port = process.env.PORT || 3000
 const app = express();
+ let unirest = require('unirest');
 
 
 // Function to generate a timestamp (format: YYYYMMDDHHmmss)
@@ -42,7 +43,6 @@ const generateAccessToken = async (consumerKey, consumerSecret) => {
 
  
   const getToken = ()=>{
-    let unirest = require('unirest');
     const base64String = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
     let req = unirest('GET', 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials')
               .headers({ 'Authorization': `Basic ${base64String}` })
@@ -79,39 +79,40 @@ const initiatePayment = async (accessToken, paymentRequest) => {
 
 // Endpoint to initiate a Lipa Na M-Pesa Online Payment
 router.post('/lipa', async (req, res) => {
-    try {
+   
       // Generate an access token for authentication
-      var accessToken = await generateAccessToken(consumerKey, consumerSecret);
-
       let tokken = getToken();
+
       const base64Stringg = Buffer.from(`174379+bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919+${generateTimestamp()}`).toString('base64');
   
-      // Create the payment request
-      const paymentRequest = {
-        BusinessShortCode: '174379',
-        Password: base64Stringg, // Generate this using Daraja documentation
-        Timestamp: generateTimestamp(), // Format: YYYYMMDDHHmmss
-        TransactionType: 'CustomerPayBillOnline',
-        Amount: 10,
-        PartyA: 254701759744, // Customer's phone number
-        PartyB: '600000',
-        PhoneNumber: 254701759744,
-        CallBackURL: 'https://mydomain.com/b2b-express-checkout/',
-        AccountReference: 'YOUR_ORDER_ID',
-        TransactionDesc: 'Payment for Order',
-      };
+     
   
-      // Make the payment request
-      const paymentResponse = await initiatePayment(tokken, paymentRequest);
-  
-      // Handle the payment response as needed
-      console.log(paymentResponse);
-  
-      res.status(200).json({ message: 'Payment initiated successfully', data: paymentResponse });
-    } catch (error) {
-      console.error('Error initiating payment:', error);
-      res.status(500).json({ message: 'Payment initiation failed' });
-    }
+     
+
+   
+let reqq = unirest('POST', 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest')
+.headers({
+	'Content-Type': 'application/json',
+	'Authorization': `Bearer ${tokken}`
+})
+.send(JSON.stringify({
+    "BusinessShortCode": 174379,
+    "Password": base64Stringg,
+    "Timestamp": generateTimestamp(),
+    "TransactionType": "CustomerPayBillOnline",
+    "Amount": 1,
+    "PartyA": 254708374149,
+    "PartyB": 174379,
+    "PhoneNumber": 254708374149,
+    "CallBackURL": "https://mydomain.com/path",
+    "AccountReference": "CompanyXLTD",
+    "TransactionDesc": "Payment of X" 
+  }))
+.end(res => {
+	if (res.error) throw new Error(res.error);
+	console.log(res.raw_body);
+});
+
   });
   
  
