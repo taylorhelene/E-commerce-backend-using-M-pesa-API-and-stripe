@@ -45,7 +45,7 @@ router.post('/lipa', async (req, res) => {
                       let jsonstring = JSON.parse(res.raw_body)
                       let tokken = jsonstring.access_token;
 
-                /*     unirest('POST', 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest')
+                 unirest('POST', 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest')
                         .headers({
                           'Content-Type': 'application/json',
                           'Authorization': `Bearer ${tokken}`
@@ -58,7 +58,7 @@ router.post('/lipa', async (req, res) => {
                             "Amount": 1,
                             "PartyA": 254701759744,
                             "PartyB": 174379,
-                            "PhoneNumber": 254708374149,
+                            "PhoneNumber": 254701759744,
                             "CallBackURL": "https://mydomain.com/path",
                             "AccountReference": "CompanyXLTD",
                             "TransactionDesc": "Payment of X" 
@@ -68,7 +68,7 @@ router.post('/lipa', async (req, res) => {
                           console.log(res.raw_body);
                         });
 
-                        */
+                       
 
 
                     });
@@ -90,41 +90,7 @@ router.post('/payment-callback', (req, res) => {
     // Respond with a success message
     res.status(200).send('Payment received and processed.');
   });
-  const path = require('path');
-  const Mpesa = require('mpesa-node');
-const { get } = require('https');
-  const mpesaApi = new Mpesa({
-    consumerKey: consumerKey,
-    consumerSecret: consumerSecret,
-    environment: 'sandbox',
-    shortCode: '600111',
-    initiatorName: 'Test Initiator',
-    lipaNaMpesaShortCode: 123456,
-    lipaNaMpesaShortPass: '<some key here>',
-    securityCredential: '<credential here>',
-    certPath: path.resolve('SandboxCertificate.cer')
-})
-
-let headers = new Headers();
-headers.append("Content-Type", "application/json");
-headers.append("Authorization", "Bearer GWhQvvQmfa0e89i0VCcbTqGqhFau");
-
-fetch("https://sandbox.safaricom.co.ke/v1/ussdpush/get-msisdn", {
-  method: 'POST',
-  headers,
-  body: JSON.stringify({
-    "primaryShortCode": "7318002",
-    "receiverShortCode": "174379",
-    "amount": 10,
-    "paymentRef": "TestAccount",
-    "callbackUrl": "https://mydomain.com/b2b-express-checkout/",
-    "partnerName": "Test",
-    "RequestRefID": "ODk4O-Tk4NWU4O-DQ66HD-D4OThkY",
-  })
-})
-  .then(response => response.text())
-  .then(result => console.log(result))
-  .catch(error => console.log(error));
+  
 
  app.listen(port, async() => {
     console.log(`Example app listening on port ${port}`)
