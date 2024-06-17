@@ -22,40 +22,13 @@ const generateTimestamp = () => {
 const consumerKey = 'GXVXdmAolMQOW6oIEl8kSG2gkI4n3kA10V0kGe0K1SARlUxG';
 const consumerSecret = 'mFbhEAJiDwiDZfqUABjBTEfDgIkZWNch89SLJCcAfVfyAsGEigjJA8el2A7c7Ee7';
 
-// Function to generate an access token
-const generateAccessToken = async (consumerKey, consumerSecret) => {
-    try {
-      const response = await axios.get('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials', {
-        auth: {
-          username: consumerKey,
-          password: consumerSecret,
-        },
-      });
 
-      return response.data.access_token;
-    } catch (error) {
-      throw error;
-    }
-  };
 
 
   //get token
 
  
-  const getToken = ()=>{
-    const base64String = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
-    let req = unirest('GET', 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials')
-              .headers({ 'Authorization': `Basic ${base64String}` })
-              .send()
-              .end(res => {
-	              if (res.error) throw new Error(res.error);
-
-	                console.log(res.raw_body);
-                  return res.raw_body.access_token;
-                });
-
-                return req;
-  }
+  
 
    // Function to initiate the Lipa Na M-Pesa payment
 const initiatePayment = async (accessToken, paymentRequest) => {
@@ -84,34 +57,51 @@ router.post('/lipa', async (req, res) => {
       let tokken = getToken();
 
       const base64Stringg = Buffer.from(`174379+bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919+${generateTimestamp()}`).toString('base64');
-  
+      
+      const getToken = ()=>{
+        const base64String = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
+        unirest('GET', 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials')
+                  .headers({ 'Authorization': `Basic ${base64String}` })
+                  .send()
+                  .end(res => {
+                    if (res.error) throw new Error(res.error);
+    
+                      console.log(res.raw_body);
+                      let tokken = res.raw_body.access_token;
+
+                     unirest('POST', 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest')
+                        .headers({
+                          'Content-Type': 'application/json',
+                          'Authorization': `Bearer ${tokken}`
+                        })
+                        .send(JSON.stringify({
+                            "BusinessShortCode": 174379,
+                            "Password": base64Stringg,
+                            "Timestamp": generateTimestamp(),
+                            "TransactionType": "CustomerPayBillOnline",
+                            "Amount": 1,
+                            "PartyA": 254708374149,
+                            "PartyB": 174379,
+                            "PhoneNumber": 254708374149,
+                            "CallBackURL": "https://mydomain.com/path",
+                            "AccountReference": "CompanyXLTD",
+                            "TransactionDesc": "Payment of X" 
+                          }))
+                        .end(res => {
+                          if (res.error) throw new Error(res.error);
+                          console.log(res.raw_body);
+                        });
+
+
+                    });
+    
+                    return req;
+      }
      
   
      
 
    
-let reqq = unirest('POST', 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest')
-.headers({
-	'Content-Type': 'application/json',
-	'Authorization': `Bearer ${tokken}`
-})
-.send(JSON.stringify({
-    "BusinessShortCode": 174379,
-    "Password": base64Stringg,
-    "Timestamp": generateTimestamp(),
-    "TransactionType": "CustomerPayBillOnline",
-    "Amount": 1,
-    "PartyA": 254708374149,
-    "PartyB": 174379,
-    "PhoneNumber": 254708374149,
-    "CallBackURL": "https://mydomain.com/path",
-    "AccountReference": "CompanyXLTD",
-    "TransactionDesc": "Payment of X" 
-  }))
-.end(res => {
-	if (res.error) throw new Error(res.error);
-	console.log(res.raw_body);
-});
 
   });
   
