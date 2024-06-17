@@ -53,8 +53,7 @@ const initiatePayment = async (accessToken, paymentRequest) => {
 // Endpoint to initiate a Lipa Na M-Pesa Online Payment
 router.post('/lipa', async (req, res) => {
    
-      // Generate an access token for authentication
-      let tokken = getToken();
+      
 
       const base64Stringg = Buffer.from(`174379+bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919+${generateTimestamp()}`).toString('base64');
       
@@ -80,7 +79,7 @@ router.post('/lipa', async (req, res) => {
                             "Timestamp": generateTimestamp(),
                             "TransactionType": "CustomerPayBillOnline",
                             "Amount": 1,
-                            "PartyA": 254708374149,
+                            "PartyA": 254701759744,
                             "PartyB": 174379,
                             "PhoneNumber": 254708374149,
                             "CallBackURL": "https://mydomain.com/path",
@@ -94,8 +93,7 @@ router.post('/lipa', async (req, res) => {
 
 
                     });
-    
-                    return req;
+
       }
      
   
