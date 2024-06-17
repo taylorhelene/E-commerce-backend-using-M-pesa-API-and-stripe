@@ -25,31 +25,6 @@ const consumerSecret = 'mFbhEAJiDwiDZfqUABjBTEfDgIkZWNch89SLJCcAfVfyAsGEigjJA8el
 
 
 
-  //get token
-
- 
-  
-
-   // Function to initiate the Lipa Na M-Pesa payment
-const initiatePayment = async (accessToken, paymentRequest) => {
-    try {
-      const response = await axios.post(
-        'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
-        paymentRequest,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      return response.data;
-    } catch (error) {
-        console.error(accessToken)
-      throw error;
-    }
-}
-
-
 // Endpoint to initiate a Lipa Na M-Pesa Online Payment
 router.post('/lipa', async (req, res) => {
    
@@ -57,7 +32,7 @@ router.post('/lipa', async (req, res) => {
 
       const base64Stringg = Buffer.from(`174379+bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919+${generateTimestamp()}`).toString('base64');
       
-      const getToken = ()=>{
+      
         const base64String = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
         unirest('GET', 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials')
                   .headers({ 'Authorization': `Basic ${base64String}` })
@@ -66,9 +41,11 @@ router.post('/lipa', async (req, res) => {
                     if (res.error) throw new Error(res.error);
     
                       console.log(res.raw_body);
-                      let tokken = res.raw_body.access_token;
 
-                     unirest('POST', 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest')
+                      let jsonstring = JSON.parse(res.raw_body)
+                      let tokken = jsonstring.access_token;
+
+                /*     unirest('POST', 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest')
                         .headers({
                           'Content-Type': 'application/json',
                           'Authorization': `Bearer ${tokken}`
@@ -91,10 +68,12 @@ router.post('/lipa', async (req, res) => {
                           console.log(res.raw_body);
                         });
 
+                        */
+
 
                     });
 
-      }
+      
      
   
      
