@@ -26,26 +26,39 @@ const consumerSecret = 'mFbhEAJiDwiDZfqUABjBTEfDgIkZWNch89SLJCcAfVfyAsGEigjJA8el
 
 
 // Endpoint to initiate a Lipa Na M-Pesa Online Payment
-router.post('/lipa', async (req, res) => {
+app.get('/lipa', async (req, res) => {
    
+      let stringg = generateTimestamp();
+      let strs= `174379bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919${stringg}`
+      const base64Stringg = Buffer.from(strs).toString('base64');
       
-
-      const base64Stringg = Buffer.from(`174379+bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919+${generateTimestamp()}`).toString('base64');
       
+      const base64String = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
+
+      let getToken=()=>{
+
+        return new Promise((resolve,reject)=>{
+
+          unirest('GET', 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials')
+                    .headers({ 'Authorization': `Basic ${base64String}` })
+                    .send()
+                    .end(resp => {
+                      if (resp.error) throw new Error(resp.error);
       
-        const base64String = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
-        unirest('GET', 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials')
-                  .headers({ 'Authorization': `Basic ${base64String}` })
-                  .send()
-                  .end(res => {
-                    if (res.error) throw new Error(res.error);
-    
-                      console.log(res.raw_body);
+                        console.log(resp.raw_body);
+                        resolve(resp)
 
-                      let jsonstring = JSON.parse(res.raw_body)
-                      let tokken = jsonstring.access_token;
+                    });
+          })
 
-                 unirest('POST', 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest')
+        }
+
+      getToken().then(respons=>{
+        
+        let jsonstring = JSON.parse(respons.raw_body)
+        let tokken = jsonstring.access_token;
+
+        unirest('POST', 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest')
                         .headers({
                           'Content-Type': 'application/json',
                           'Authorization': `Bearer ${tokken}`
@@ -53,7 +66,7 @@ router.post('/lipa', async (req, res) => {
                         .send(JSON.stringify({
                             "BusinessShortCode": 174379,
                             "Password": base64Stringg,
-                            "Timestamp": generateTimestamp(),
+                            "Timestamp": strs,
                             "TransactionType": "CustomerPayBillOnline",
                             "Amount": 1,
                             "PartyA": 254701759744,
@@ -63,22 +76,16 @@ router.post('/lipa', async (req, res) => {
                             "AccountReference": "CompanyXLTD",
                             "TransactionDesc": "Payment of X" 
                           }))
-                        .end(res => {
-                          if (res.error) throw new Error(res.error);
-                          console.log(res.raw_body);
+                        .end(ress => {
+                          if (ress.error) throw new Error(ress.error);
+                          console.log(ress.raw_body);
+                          res.send(ress.raw_body);
                         });
 
-                       
 
+      })
+        
 
-                    });
-
-      
-     
-  
-     
-
-   
 
   });
   
