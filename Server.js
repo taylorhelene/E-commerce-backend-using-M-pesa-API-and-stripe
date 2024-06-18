@@ -66,7 +66,7 @@ app.get('/lipa', async (req, res) => {
                         .send(JSON.stringify({
                             "BusinessShortCode": 174379,
                             "Password": base64Stringg,
-                            "Timestamp": strs,
+                            "Timestamp": stringg,
                             "TransactionType": "CustomerPayBillOnline",
                             "Amount": 1,
                             "PartyA": 254701759744,
