@@ -8,6 +8,8 @@ const app = express();
 dotenv.config();
 const User = require('./user');
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const db = require('./data.json');
+const fs = require('fs');
 
 
 const uri = process.env.url;
@@ -126,6 +128,15 @@ router.post('/payment-callback', (req, res) => {
   });
 
 app.use(express.json()); // Enable parsing JSON request bodies
+
+app.post('/db', async ( res) => {
+  try {
+    
+    res.status(201).send(user);
+  } catch (error) {
+    res.status(400).send({ error: error.message });
+  }
+});
 
 app.post('/users', async (req, res) => {
   try {
