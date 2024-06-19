@@ -4,6 +4,8 @@ const axios = require('axios');
 const port = process.env.PORT || 3000
 const app = express();
  let unirest = require('unirest');
+ let dotenv = require("dotenv") ;
+dotenv.config()
 
 
 // Function to generate a timestamp (format: YYYYMMDDHHmmss)
@@ -19,8 +21,8 @@ const generateTimestamp = () => {
 };
 
 // Daraja API credentials
-const consumerKey = 'GXVXdmAolMQOW6oIEl8kSG2gkI4n3kA10V0kGe0K1SARlUxG';
-const consumerSecret = 'mFbhEAJiDwiDZfqUABjBTEfDgIkZWNch89SLJCcAfVfyAsGEigjJA8el2A7c7Ee7';
+const consumerKey = process.env.consumerKey;
+const consumerSecret = process.env.consumerSecret;
 
 
 
@@ -29,7 +31,7 @@ const consumerSecret = 'mFbhEAJiDwiDZfqUABjBTEfDgIkZWNch89SLJCcAfVfyAsGEigjJA8el
 app.get('/lipa', async (req, res) => {
    
       let stringg = generateTimestamp();
-      let strs= `174379bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919${stringg}`
+      let strs= `174379${process.env.passkey}${stringg}`
       const base64Stringg = Buffer.from(strs).toString('base64');
       
       
