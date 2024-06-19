@@ -131,8 +131,9 @@ app.use(express.json()); // Enable parsing JSON request bodies
 
 app.post('/db', async ( res) => {
   try {
-    
-    res.status(201).send(user);
+    const jsonData = fs.readFileSync(dataPath)
+    let database = JSON.parse(jsonData); 
+    res.status(201).send(database);
   } catch (error) {
     res.status(400).send({ error: error.message });
   }
