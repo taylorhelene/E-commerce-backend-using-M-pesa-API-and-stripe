@@ -1,11 +1,13 @@
 const { resolve } = require('path');
 let unirest = require('unirest');
-let key = 'GXVXdmAolMQOW6oIEl8kSG2gkI4n3kA10V0kGe0K1SARlUxG';
-let secret = 'mFbhEAJiDwiDZfqUABjBTEfDgIkZWNch89SLJCcAfVfyAsGEigjJA8el2A7c7Ee7';
 let string = `${key}:${secret}`
 let encoded = btoa(string);
 let token = '';
-let s = ''
+let dotenv = require("dotenv") ;
+dotenv.config()
+let key = process.env.consumerKey;
+let secret = process.env.consumerSecret;
+
 
 
 // Function to generate a timestamp (format: YYYYMMDDHHmmss)
@@ -47,7 +49,7 @@ getToken().then(res=> {
     token = JSON.parse(res).access_token
     let str = generateTimestamp();
 
-    const base64String = Buffer.from(`174379bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919${str}`).toString('base64');
+    const base64String = Buffer.from(`174379${str}`).toString('base64');
     const base64Stringgg = Buffer.from("174379bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"+str).toString('base64');
 
   
