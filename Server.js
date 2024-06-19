@@ -5,8 +5,11 @@ const port = process.env.PORT || 3000
 const app = express();
  let unirest = require('unirest');
  let dotenv = require("dotenv") ;
-dotenv.config()
+dotenv.config();
+const User = require('./user');
 const { MongoClient, ServerApiVersion } = require('mongodb');
+
+
 const uri = process.env.url;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -121,6 +124,18 @@ router.post('/payment-callback', (req, res) => {
     // Respond with a success message
     res.status(200).send('Payment received and processed.');
   });
+
+app.use(express.json()); // Enable parsing JSON request bodies
+
+app.post('/users', async (req, res) => {
+  try {
+    const user = new User(req.body);
+    await user.save();
+    res.status(201).send(user);
+  } catch (error) {
+    res.status(400).send({ error: error.message });
+  }
+});
   
 
  app.listen(port, async() => {
