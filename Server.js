@@ -129,11 +129,12 @@ router.post('/payment-callback', (req, res) => {
 
 app.use(express.json()); // Enable parsing JSON request bodies
 
-app.post('/db', async ( res) => {
+app.get('/db', async (req,res) => {
   try {
     const jsonData = fs.readFileSync(dataPath)
     let database = JSON.parse(jsonData); 
-    res.status(201).send(database);
+    res.status(201).send(database)
+    
   } catch (error) {
     res.status(400).send({ error: error.message });
   }
