@@ -7,7 +7,6 @@ const app = express();
  let dotenv = require("dotenv") ;
 dotenv.config();
 const User = require('./user');
-const { MongoClient, ServerApiVersion } = require('mongodb');
 const db = require('./data.json');
 const mongoose = require('mongoose');
 
