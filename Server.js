@@ -9,31 +9,21 @@ dotenv.config();
 const User = require('./user');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const db = require('./data.json');
-const fs = require('fs');
+const mongoose = require('mongoose');
 
 
 const uri = process.env.url;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
-run().catch(console.dir);
+mongoose.connect(uri);
+const database = mongoose.connection;
+
+database.on('error', (error) => {
+    console.log(error)
+})
+
+database.once('connected', () => {
+    console.log('Database Connected');
+})
 
 // Function to generate a timestamp (format: YYYYMMDDHHmmss)
 const generateTimestamp = () => {
@@ -142,9 +132,15 @@ app.get('/db', async (req,res) => {
 
 app.post('/users', async (req, res) => {
   try {
-    const user = new User(req.body);
-    await user.save();
-    res.status(201).send(user);
+    const user = new User(
+     {
+      name: req.body.name,
+      email: req.body.email,
+      password : req.body.password
+     }
+    );
+    let data = await user.save();
+    res.status(201).send(data);
   } catch (error) {
     res.status(400).send({ error: error.message });
   }
