@@ -15,16 +15,16 @@ const userSchema = new mongoose.Schema({
     min: 8,
   },
   address: {
-    type: Array,
+    type: [Map],
   },
   orders: {
-    type: Array,
+    type: [Map],
   },
   cart: {
-    type: Array,
+    type: [Map],
   },
   favourite: {
-    type: Array,
+    type: [Map],
   },
 });
 
