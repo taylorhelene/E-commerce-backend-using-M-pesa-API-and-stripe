@@ -160,7 +160,7 @@ app.get('/users', async (req, res) => {
 
 app.get('/users/:email', async (req, res) => {
   try {
-    const user = await User.findById(req.params.email);
+    const user = await User.find({email : req.params.email});
     if (!user) {
       return res.status(404).send({ error: 'User not found' });
     }
