@@ -136,7 +136,11 @@ app.post('/users', async (req, res) => {
      {
       name: req.body.name,
       email: req.body.email,
-      password : req.body.password
+      password : req.body.password,
+      address: req.body.address,
+      orders:req.body.orders,
+      cart: req.body.cart,
+      favourite: req.body.favourite
      }
     );
     let data = await user.save();
