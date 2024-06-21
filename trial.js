@@ -47,8 +47,7 @@ let getToken=()=>{
 getToken().then(res=> {
     //console.log(JSON.parse(res).access_token)
     token = JSON.parse(res).access_token
-    let str = generateTimestamp();
-
+  
    
     const base64Stringg = Buffer.from("174379bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c91920240613111415").toString('base64');
    
