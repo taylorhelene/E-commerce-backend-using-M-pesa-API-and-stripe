@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const axios = require('axios');
 const port = process.env.PORT || 3000
 const app = express();
  let unirest = require('unirest');
