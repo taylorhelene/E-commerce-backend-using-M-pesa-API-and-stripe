@@ -75,9 +75,10 @@ console.log(token)
     })
     .send(JSON.stringify({
         "ShortCode":  600986,
-        "ResponseType": "Completed",
-        "ConfirmationURL": "https://mydomain.com/confirmation",
-        "ValidationURL": "https://mydomain.com/validation"
+        "CommandID": "CustomerPayBillOnline",
+        "amount": "1",
+        "MSISDN": "254701759744",
+        "BillRefNumber": "account"
       }))
     .end(result => {
       if (result.error) throw new Error(result.error);
