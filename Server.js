@@ -170,11 +170,10 @@ app.get('/users/:email', async (req, res) => {
   }
 });
 
-app.put('/users/:email', async (req, res) => {
+app.patch('/users/:email', async (req, res) => {
   try {
-    const user = await User.findOneAndUpdate({email: req.params.email}, req.body, {
-      new: true,
-    });
+    const user = await User.findOneAndUpdate({email: req.params.email}, req.body, {new: true,}
+    );
 
     if (!user) {
      return res.status(404).send({ error: 'User not found' });
