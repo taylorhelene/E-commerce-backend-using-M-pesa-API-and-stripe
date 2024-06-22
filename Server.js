@@ -91,19 +91,28 @@ app.get('/lipa', async (req, res) => {
                             "PartyA": 254701759744,
                             "PartyB": 174379,
                             "PhoneNumber": 254701759744,
-                            "CallBackURL": "https://mydomain.com/path",
+                            "CallBackURL": "https://mydomain.com/confirmation",
                             "AccountReference": "CompanyXLTD",
                             "TransactionDesc": "Payment of X" 
                           }))
                         .end(ress => {
                           if (ress.error) throw new Error(ress.error);
                           console.log(ress.raw_body);
-                          
+
                         });
 
               //process payment complete
 
+
         
+      
+
+      })
+
+      getToken().then(rrressp=>{
+        let jsonstring = JSON.parse(rrressp.raw_body)
+        let tokken = jsonstring.access_token;
+
         unirest('POST', 'https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl')
         .headers({
           'Content-Type': 'application/json',
@@ -121,7 +130,7 @@ app.get('/lipa', async (req, res) => {
           res.send(result.raw_body);
         });
 
-
+                          
       })
         
 
