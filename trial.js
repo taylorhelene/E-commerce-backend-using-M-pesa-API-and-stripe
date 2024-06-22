@@ -1,18 +1,22 @@
 const { resolve } = require('path');
 let unirest = require('unirest');
-let string = `${key}:${secret}`
-let encoded = btoa(string);
+
 let token = '';
 let dotenv = require("dotenv") ;
 dotenv.config()
 let key = process.env.consumerKey;
 let secret = process.env.consumerSecret;
 
+let string = `${key}:${secret}`
 
+let encoded = btoa(string);
 
 
 let getToken=()=>{
 
+   
+    //const encoded = Buffer.from(`${key}:${secret}`).toString('base64');
+   
     return new Promise((resolve,reject)=>{
         unirest('GET', 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials')
         .headers({ 'Authorization': `Basic ${encoded}` })
@@ -44,22 +48,44 @@ getToken().then(res=> {
                 'Authorization': `Bearer ${token}`
             })
             .send(JSON.stringify({
-                "BusinessShortCode": 174379,
+                "BusinessShortCode": 184379,
                 "Password": base64Stringg,
                 "Timestamp": "20240613111415",
                 "TransactionType": "CustomerPayBillOnline",
                 "Amount": 1,
                 "PartyA": 254701759744,
-                "PartyB": 174379,
+                "PartyB": 184379,
                 "PhoneNumber": 254701759744,
-                "CallBackURL": "https://mydomain.com/path",
+                "CallBackURL": "https://mydomain.com/confirmation",
                 "AccountReference": "CompanyXLTD",
                 "TransactionDesc": "Payment of X" 
             }))
             .end(res => {
                 if (res.error) throw new Error(res.error);
                 console.log(res.raw_body);
+
+                return res.raw_body;
             });
+
+console.log(token)
+    unirest('POST', 'https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl')
+    .headers({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    })
+    .send(JSON.stringify({
+        "ShortCode":  184379,
+        "ResponseType": "Completed",
+        "ConfirmationURL": "https://mydomain.com/confirmation",
+        "ValidationURL": "https://mydomain.com/validation"
+      }))
+    .end(result => {
+      if (result.error) throw new Error(result.error);
+      console.log(result.raw_body);
+      res.send(result.raw_body);
+    });
 
 
 });
+
+

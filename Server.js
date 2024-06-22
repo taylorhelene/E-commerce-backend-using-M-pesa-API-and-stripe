@@ -97,8 +97,8 @@ app.get('/lipa', async (req, res) => {
                           }))
                         .end(ress => {
                           if (ress.error) throw new Error(ress.error);
-                          console.log(ress.raw_body);
-
+                          console.log(ress);
+                          res.send(ress.raw_body)
                         });
 
               //process payment complete
@@ -108,7 +108,7 @@ app.get('/lipa', async (req, res) => {
       
 
       })
-
+/*
       getToken().then(rrressp=>{
         let jsonstring = JSON.parse(rrressp.raw_body)
         let tokken = jsonstring.access_token;
@@ -120,8 +120,8 @@ app.get('/lipa', async (req, res) => {
         })
         .send(JSON.stringify({
             "ShortCode":  174379,
-            "ResponseType": "Cancelled",
-            "ConfirmationURL": "https://mydomain.com/confirmation",
+            "ResponseType": "Completed",
+            "ConfirmationURL": "http://localhost:3000/c2b/confirm",
             "ValidationURL": "https://mydomain.com/validation",
           }))
         .end(result => {
@@ -132,7 +132,7 @@ app.get('/lipa', async (req, res) => {
 
                           
       })
-        
+        */
 
 
   });
