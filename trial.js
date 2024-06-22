@@ -48,13 +48,13 @@ getToken().then(res=> {
                 'Authorization': `Bearer ${token}`
             })
             .send(JSON.stringify({
-                "BusinessShortCode": 600986,
+                "BusinessShortCode": 174379,
                 "Password": base64Stringg,
                 "Timestamp": "20240613111415",
                 "TransactionType": "CustomerPayBillOnline",
                 "Amount": 1,
                 "PartyA": 254701759744,
-                "PartyB": 600986,
+                "PartyB": 174379,
                 "PhoneNumber": 254701759744,
                 "CallBackURL": "https://mydomain.com/confirmation",
                 "AccountReference": "CompanyXLTD",
@@ -82,7 +82,7 @@ console.log(token)
     .end(result => {
       if (result.error) throw new Error(result.error);
       console.log(result.raw_body);
-      res.send(result.raw_body);
+     
     });
 
 
