@@ -75,6 +75,8 @@ app.get('/lipa', async (req, res) => {
         let jsonstring = JSON.parse(respons.raw_body)
         let tokken = jsonstring.access_token;
 
+        //process request
+
         unirest('POST', 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest')
                         .headers({
                           'Content-Type': 'application/json',
@@ -96,8 +98,28 @@ app.get('/lipa', async (req, res) => {
                         .end(ress => {
                           if (ress.error) throw new Error(ress.error);
                           console.log(ress.raw_body);
-                          res.send(ress.raw_body);
+                          
                         });
+
+              //process payment complete
+
+        
+        unirest('POST', 'https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl')
+        .headers({
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${tokken}`
+        })
+        .send(JSON.stringify({
+            "ShortCode":  174379,
+            "ResponseType": "Cancelled",
+            "ConfirmationURL": "https://mydomain.com/confirmation",
+            "ValidationURL": "https://mydomain.com/validation",
+          }))
+        .end(result => {
+          if (result.error) throw new Error(result.error);
+          console.log(result.raw_body);
+          res.send(result.raw_body);
+        });
 
 
       })
