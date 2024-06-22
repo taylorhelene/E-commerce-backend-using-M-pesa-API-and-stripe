@@ -174,7 +174,6 @@ app.put('/users/:email', async (req, res) => {
   try {
     const user = await User.findOneAndUpdate({email: req.params.email}, req.body, {
       new: true,
-      runValidators: true,
     });
 
     if (!user) {
