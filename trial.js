@@ -64,7 +64,7 @@ getToken().then(res=> {
                 "PartyA": 254701759744,
                 "PartyB": 174379,
                 "PhoneNumber": 254701759744,
-                "CallBackURL": "https://confirmation-url-server.onrender.com",
+                "CallBackURL": `${callback_url}/api/stkPushCallback/${Order_ID}`,
                 "AccountReference": "CompanyXLTD",
                 "TransactionDesc": "Payment of X" 
             }))
@@ -74,25 +74,6 @@ getToken().then(res=> {
 
                 return res.raw_body;
             });
-
-console.log(token)
-    unirest('POST', 'https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl')
-    .headers({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    })
-    .send(JSON.stringify({
-        "ShortCode":  600986,
-        "CommandID": "CustomerPayBillOnline",
-        "amount": "1",
-        "MSISDN": "254701759744",
-        "BillRefNumber": "account"
-      }))
-    .end(result => {
-      if (result.error) throw new Error(result.error);
-      console.log(result.raw_body);
-     
-    });
 
 
 });

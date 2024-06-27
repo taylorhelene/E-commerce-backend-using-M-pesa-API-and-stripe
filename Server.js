@@ -8,6 +8,8 @@ dotenv.config();
 const User = require('./user');
 const db = require('./data.json');
 const mongoose = require('mongoose');
+let ngrok = require('ngrok');
+let  cors = require("cors");
 
 
 const uri = process.env.url;
@@ -42,8 +44,36 @@ const consumerSecret = process.env.consumerSecret;
 
 
 
+app.use(express.json()); // Enable parsing JSON request bodies
+// app.use(cors())
+
+
+(async function() {
+  console.log("Initializing Ngrok tunnel...");
+
+  // Initialize ngrok using auth token and hostname
+  const url = await ngrok.connect({
+      proto: "http",
+      // Your authtoken if you want your hostname to be the same everytime
+      authtoken: "",
+      // Your hostname if you want your hostname to be the same everytime
+      hostname: "",
+      // Your app port
+      addr: port,
+  });
+
+  console.log(`Listening on url ${url}`);
+  console.log("Ngrok tunnel initialized!");
+})();
+
 // Endpoint to initiate a Lipa Na M-Pesa Online Payment
 app.get('/lipa', async (req, res) => {
+
+      // create callback url
+      const callback_url = await ngrok.connect(port);
+      const api = ngrok.getApi();
+      await api.listTunnels();
+      console.log("callback ",callback_url)
    
       let stringg = generateTimestamp();
       let strs= `174379${process.env.passkey}${stringg}`
@@ -91,7 +121,7 @@ app.get('/lipa', async (req, res) => {
                             "PartyA": 254701759744,
                             "PartyB": 174379,
                             "PhoneNumber": 254701759744,
-                            "CallBackURL": "https://confirmation-url-server.onrender.com",
+                            "CallBackURL": `${callback_url}/lipa`,
                             "AccountReference": "CompanyXLTD",
                             "TransactionDesc": "Payment of X" 
                           }))
@@ -146,7 +176,7 @@ router.post('/payment-callback', (req, res) => {
     res.status(200).send('Payment received and processed.');
   });
 
-app.use(express.json()); // Enable parsing JSON request bodies
+
 
 app.get('/db', async (req,res) => {
   try {
