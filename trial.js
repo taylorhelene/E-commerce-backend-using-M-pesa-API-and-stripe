@@ -1,5 +1,6 @@
 const { resolve } = require('path');
 let unirest = require('unirest');
+let ngrok = require('ngrok')
 
 let token = '';
 let dotenv = require("dotenv") ;
@@ -10,6 +11,13 @@ let secret = process.env.consumerSecret;
 let string = `${key}:${secret}`
 
 let encoded = btoa(string);
+ // create callback url
+ const callback_url = await ngrok.connect(3000);
+ const api = ngrok.getApi();
+ await api.listTunnels();
+
+
+ console.log("callback ",callback_url)
 
 
 let getToken=()=>{
@@ -56,7 +64,7 @@ getToken().then(res=> {
                 "PartyA": 254701759744,
                 "PartyB": 174379,
                 "PhoneNumber": 254701759744,
-                "CallBackURL": "https://mydomain.com/confirmation",
+                "CallBackURL": "https://confirmation-url-server.onrender.com",
                 "AccountReference": "CompanyXLTD",
                 "TransactionDesc": "Payment of X" 
             }))

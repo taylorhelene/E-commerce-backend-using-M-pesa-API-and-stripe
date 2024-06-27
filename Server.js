@@ -91,7 +91,7 @@ app.get('/lipa', async (req, res) => {
                             "PartyA": 254701759744,
                             "PartyB": 174379,
                             "PhoneNumber": 254701759744,
-                            "CallBackURL": "https://mydomain.com/confirmation",
+                            "CallBackURL": "https://confirmation-url-server.onrender.com",
                             "AccountReference": "CompanyXLTD",
                             "TransactionDesc": "Payment of X" 
                           }))
