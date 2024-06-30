@@ -55,7 +55,7 @@ app.use(express.json()); // Enable parsing JSON request bodies
   const url = await ngrok.connect({
       proto: "http",
       // Your authtoken if you want your hostname to be the same everytime
-      authtoken: "2iao9x2Nbre5hr46PVMSNVP6QW2_7CjQjAh4jY1q8dYiJsCsA",
+      authtoken: process.env.ngrokauth,
       // Your hostname if you want your hostname to be the same everytime
       hostname: "",
       // Your app port
