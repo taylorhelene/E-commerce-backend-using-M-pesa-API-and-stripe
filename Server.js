@@ -55,7 +55,7 @@ app.use(express.json()); // Enable parsing JSON request bodies
   const url = await ngrok.connect({
       proto: "http",
       // Your authtoken if you want your hostname to be the same everytime
-      authtoken: "",
+      authtoken: "2iao9x2Nbre5hr46PVMSNVP6QW2_7CjQjAh4jY1q8dYiJsCsA",
       // Your hostname if you want your hostname to be the same everytime
       hostname: "",
       // Your app port
@@ -118,10 +118,10 @@ app.get('/lipa', async (req, res) => {
                             "Timestamp": stringg,
                             "TransactionType": "CustomerPayBillOnline",
                             "Amount": 1,
-                            "PartyA": 254701759744,
+                            "PartyA": 254714442664,
                             "PartyB": 174379,
-                            "PhoneNumber": 254701759744,
-                            "CallBackURL": `${callback_url}/lipa`,
+                            "PhoneNumber": 254714442664,
+                            "CallBackURL": `${callback_url}`,
                             "AccountReference": "CompanyXLTD",
                             "TransactionDesc": "Payment of X" 
                           }))
