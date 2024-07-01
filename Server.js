@@ -81,6 +81,7 @@ app.get('/lipa', async (req, res) => {
       
       
       const base64String = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
+      const {Order_ID} = req.body
 
       let getToken=()=>{
 
@@ -118,16 +119,16 @@ app.get('/lipa', async (req, res) => {
                             "Timestamp": stringg,
                             "TransactionType": "CustomerPayBillOnline",
                             "Amount": 1,
-                            "PartyA": 254714442664,
+                            "PartyA": 254701759744,
                             "PartyB": 174379,
-                            "PhoneNumber": 254714442664,
-                            "CallBackURL": `${callback_url}`,
+                            "PhoneNumber": 254701759744,
+                            "CallBackURL": `${callback_url}/payment-callback/${Order_ID}`,
                             "AccountReference": "CompanyXLTD",
                             "TransactionDesc": "Payment of X" 
                           }))
                         .end(ress => {
                           if (ress.error) throw new Error(ress.error);
-                          console.log(ress);
+                          console.log(req.body);
                           res.send(ress.raw_body)
                         });
 
@@ -169,11 +170,51 @@ app.get('/lipa', async (req, res) => {
   
  
 
-router.post('/payment-callback', (req, res) => {
+app.get('/payment-callback/:Order_ID', async(req, res) => {
     // Handle payment callback logic here
     // Verify the payment and update your application's records
     // Respond with a success message
-    res.status(200).send('Payment received and processed.');
+    try {
+      //    order id
+      const {Order_ID} = req.params
+
+      //callback details
+
+      const {
+          MerchantRequestID,
+          CheckoutRequestID,
+          ResultCode,
+          ResultDesc,
+          CallbackMetadata
+               }   = req.body.Body.stkCallback
+
+  //     get the meta data from the meta
+      const meta = Object.values(await CallbackMetadata.Item)
+      const PhoneNumber = meta.find(o => o.Name === 'PhoneNumber').Value.toString()
+      const Amount = meta.find(o => o.Name === 'Amount').Value.toString()
+      const MpesaReceiptNumber = meta.find(o => o.Name === 'MpesaReceiptNumber').Value.toString()
+      const TransactionDate = meta.find(o => o.Name === 'TransactionDate').Value.toString()
+
+      // do something with the data
+      console.log("-".repeat(20)," OUTPUT IN THE CALLBACK ", "-".repeat(20))
+      console.log(`
+          Order_ID : ${Order_ID},
+          MerchantRequestID : ${MerchantRequestID},
+          CheckoutRequestID: ${CheckoutRequestID},
+          ResultCode: ${ResultCode},
+          ResultDesc: ${ResultDesc},
+          PhoneNumber : ${PhoneNumber},
+          Amount: ${Amount}, 
+          MpesaReceiptNumber: ${MpesaReceiptNumber},
+          TransactionDate : ${TransactionDate}
+      `)
+
+      res.json(true)
+
+    } catch (error) {
+      
+    }
+    //res.status(200).send('Payment received and processed.');
   });
 
 
