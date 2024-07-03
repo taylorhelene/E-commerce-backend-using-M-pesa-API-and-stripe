@@ -9,8 +9,7 @@ const User = require('./user');
 const db = require('./data.json');
 const mongoose = require('mongoose');
 let ngrok = require('ngrok');
-let  cors = require("cors");
-
+let tokken = "";
 
 const uri = process.env.url;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -66,8 +65,14 @@ app.use(express.json()); // Enable parsing JSON request bodies
   console.log("Ngrok tunnel initialized!");
 })();
 
+  let stringg = generateTimestamp();
+  let strs= `174379${process.env.passkey}${stringg}`
+  let base64Stringg = Buffer.from(strs).toString('base64');
+  let CheckoutRequestID = "";
+      
+
 // Endpoint to initiate a Lipa Na M-Pesa Online Payment
-app.get('/lipa', async (req, res) => {
+app.post('/lipa', async (req, res) => {
 
       // create callback url
       const callback_url = await ngrok.connect(port);
@@ -75,9 +80,6 @@ app.get('/lipa', async (req, res) => {
       await api.listTunnels();
       console.log("callback ",callback_url)
    
-      let stringg = generateTimestamp();
-      let strs= `174379${process.env.passkey}${stringg}`
-      const base64Stringg = Buffer.from(strs).toString('base64');
       
       
       const base64String = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
@@ -104,7 +106,7 @@ app.get('/lipa', async (req, res) => {
       getToken().then(respons=>{
         
         let jsonstring = JSON.parse(respons.raw_body)
-        let tokken = jsonstring.access_token;
+        tokken = jsonstring.access_token;
 
         //process request
 
@@ -128,8 +130,10 @@ app.get('/lipa', async (req, res) => {
                           }))
                         .end(ress => {
                           if (ress.error) throw new Error(ress.error);
-                          console.log(req.body);
+                          CheckoutRequestID=ress.body.CheckoutRequestID;
+                          console.log(ress.body, `${callback_url}/payment-callback/${Order_ID}`,CheckoutRequestID);
                           res.send(ress.raw_body)
+                          
                         });
 
               //process payment complete
@@ -139,81 +143,37 @@ app.get('/lipa', async (req, res) => {
       
 
       })
-/*
-      getToken().then(rrressp=>{
-        let jsonstring = JSON.parse(rrressp.raw_body)
-        let tokken = jsonstring.access_token;
 
-        unirest('POST', 'https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl')
-        .headers({
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${tokken}`
-        })
-        .send(JSON.stringify({
-            "ShortCode":  174379,
-            "ResponseType": "Completed",
-            "ConfirmationURL": "http://localhost:3000/c2b/confirm",
-            "ValidationURL": "https://mydomain.com/validation",
-          }))
-        .end(result => {
-          if (result.error) throw new Error(result.error);
-          console.log(result.raw_body);
-          res.send(result.raw_body);
-        });
-
-                          
-      })
-        */
 
 
   });
   
  
 
-app.get('/payment-callback/:Order_ID', async(req, res) => {
+app.get('/payment-callback/1', async(req, res) => {
     // Handle payment callback logic here
     // Verify the payment and update your application's records
     // Respond with a success message
-    try {
-      //    order id
-      const {Order_ID} = req.params
+    stringg = generateTimestamp();
+    strs= `174379${process.env.passkey}${stringg}`
+    base64Stringg = Buffer.from(strs).toString('base64');
 
-      //callback details
-
-      const {
-          MerchantRequestID,
-          CheckoutRequestID,
-          ResultCode,
-          ResultDesc,
-          CallbackMetadata
-               }   = req.body.Body.stkCallback
-
-  //     get the meta data from the meta
-      const meta = Object.values(await CallbackMetadata.Item)
-      const PhoneNumber = meta.find(o => o.Name === 'PhoneNumber').Value.toString()
-      const Amount = meta.find(o => o.Name === 'Amount').Value.toString()
-      const MpesaReceiptNumber = meta.find(o => o.Name === 'MpesaReceiptNumber').Value.toString()
-      const TransactionDate = meta.find(o => o.Name === 'TransactionDate').Value.toString()
-
-      // do something with the data
-      console.log("-".repeat(20)," OUTPUT IN THE CALLBACK ", "-".repeat(20))
-      console.log(`
-          Order_ID : ${Order_ID},
-          MerchantRequestID : ${MerchantRequestID},
-          CheckoutRequestID: ${CheckoutRequestID},
-          ResultCode: ${ResultCode},
-          ResultDesc: ${ResultDesc},
-          PhoneNumber : ${PhoneNumber},
-          Amount: ${Amount}, 
-          MpesaReceiptNumber: ${MpesaReceiptNumber},
-          TransactionDate : ${TransactionDate}
-      `)
-
-      res.json(true)
-
-    } catch (error) {
-      
-    }
+    unirest('POST', 'https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query')
+      .headers({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${tokken}`
+      })
+      .send(JSON.stringify({
+          "BusinessShortCode": 174379,
+          "Password": base64Stringg,
+          "Timestamp": stringg,
+          "CheckoutRequestID": `${CheckoutRequestID}`,
+        }))
+      .end(ress => {
+        res.send(ress.error)
+        if (ress.error) throw new Error(ress.error);
+        console.log(ress.raw_body);
+      });
     //res.status(200).send('Payment received and processed.');
   });
 
