@@ -1,5 +1,4 @@
 const express = require('express');
-const router = express.Router();
 const port = process.env.PORT || 3000
 const app = express();
  let unirest = require('unirest');
@@ -10,6 +9,9 @@ const db = require('./data.json');
 const mongoose = require('mongoose');
 let ngrok = require('ngrok');
 let tokken = "";
+// Daraja API credentials
+const consumerKey = process.env.consumerKey;
+const consumerSecret = process.env.consumerSecret;
 
 const uri = process.env.url;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -35,11 +37,6 @@ const generateTimestamp = () => {
   const seconds = String(now.getSeconds()).padStart(2, '0');
   return `${year}${month}${day}${hours}${minutes}${seconds}`;
 };
-
-// Daraja API credentials
-const consumerKey = process.env.consumerKey;
-const consumerSecret = process.env.consumerSecret;
-
 
 
 
