@@ -150,7 +150,7 @@ app.post('/lipa', async (req, res) => {
   
  
 
-app.get('/payment-callback/1', async(req, res) => {
+app.post('/payment-callback/1', async(req, res) => {
     // Handle payment callback logic here
     // Verify the payment and update your application's records
     // Respond with a success message
