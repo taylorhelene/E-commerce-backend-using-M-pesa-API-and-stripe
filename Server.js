@@ -118,9 +118,9 @@ app.post('/lipa', async (req, res) => {
                             "Timestamp": stringg,
                             "TransactionType": "CustomerPayBillOnline",
                             "Amount": 1,
-                            "PartyA": 254701759744,
+                            "PartyA": 254722724071,
                             "PartyB": 174379,
-                            "PhoneNumber": 254701759744,
+                            "PhoneNumber": 254722724071,
                             "CallBackURL": `${callback_url}/payment-callback/${Order_ID}`,
                             "AccountReference": "CompanyXLTD",
                             "TransactionDesc": "Payment of X" 
@@ -167,9 +167,8 @@ app.post('/payment-callback/1', async(req, res) => {
           "CheckoutRequestID": `${CheckoutRequestID}`,
         }))
       .end(ress => {
-        res.send(ress.error)
         if (ress.error) throw new Error(ress.error);
-        console.log(ress.raw_body);
+        console.log(ress.body);
       });
     //res.status(200).send('Payment received and processed.');
   });
