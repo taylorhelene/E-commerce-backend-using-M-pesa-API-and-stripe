@@ -1,14 +1,15 @@
 const express = require('express');
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3000;
 const app = express();
- let unirest = require('unirest');
- let dotenv = require("dotenv") ;
+const unirest = require('unirest');
+const dotenv = require("dotenv") ;
 dotenv.config();
 const User = require('./user');
 const db = require('./data.json');
 const mongoose = require('mongoose');
-let ngrok = require('ngrok');
+const ngrok = require('ngrok');
 let tokken = "";
+
 // Daraja API credentials
 const consumerKey = process.env.consumerKey;
 const consumerSecret = process.env.consumerSecret;
@@ -41,7 +42,7 @@ const generateTimestamp = () => {
 
 
 app.use(express.json()); // Enable parsing JSON request bodies
-// app.use(cors())
+
 
 
 (async function() {
@@ -62,51 +63,51 @@ app.use(express.json()); // Enable parsing JSON request bodies
   console.log("Ngrok tunnel initialized!");
 })();
 
-  let stringg = generateTimestamp();
-  let strs= `174379${process.env.passkey}${stringg}`
-  let base64Stringg = Buffer.from(strs).toString('base64');
+//set up timestamp and encodes
+
+  let Timestampstring = generateTimestamp();
+  let encodingpassword= `174379${process.env.passkey}${Timestampstring}`
+  let base64PasswordEncoded = Buffer.from(encodingpassword).toString('base64');
   let CheckoutRequestID = "";
       
 
 // Endpoint to initiate a Lipa Na M-Pesa Online Payment
 app.post('/lipa', async (req, res) => {
 
-      // create callback url
+      // create callback url with ngrok
       const callback_url = await ngrok.connect(port);
       const api = ngrok.getApi();
       await api.listTunnels();
       console.log("callback ",callback_url)
    
-      
-      
-      const base64String = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
+      //encode token
+      const base64AuthEncoded = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
       const {Order_ID} = req.body
 
+      //promise to generate token
       let getToken=()=>{
 
         return new Promise((resolve,reject)=>{
 
           unirest('GET', 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials')
-                    .headers({ 'Authorization': `Basic ${base64String}` })
+                    .headers({ 'Authorization': `Basic ${base64AuthEncoded}` })
                     .send()
-                    .end(resp => {
-                      if (resp.error) throw new Error(resp.error);
-      
-                        console.log(resp.raw_body);
-                        resolve(resp)
-
+                    .end(response => {
+                      if (response.error) throw new Error(response.error);
+                        resolve(response)
                     });
           })
 
         }
 
-      getToken().then(respons=>{
-        
-        let jsonstring = JSON.parse(respons.raw_body)
+      //generate token
+      getToken().then(response=>{
+        //parse raw_body
+        console.log(response.body)
+        let jsonstring = JSON.parse(response.raw_body)
         tokken = jsonstring.access_token;
 
         //process request
-
         unirest('POST', 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest')
                         .headers({
                           'Content-Type': 'application/json',
@@ -114,8 +115,8 @@ app.post('/lipa', async (req, res) => {
                         })
                         .send(JSON.stringify({
                             "BusinessShortCode": 174379,
-                            "Password": base64Stringg,
-                            "Timestamp": stringg,
+                            "Password": base64PasswordEncoded,
+                            "Timestamp": Timestampstring,
                             "TransactionType": "CustomerPayBillOnline",
                             "Amount": 1,
                             "PartyA": 254722724071,
@@ -125,24 +126,13 @@ app.post('/lipa', async (req, res) => {
                             "AccountReference": "CompanyXLTD",
                             "TransactionDesc": "Payment of X" 
                           }))
-                        .end(ress => {
-                          if (ress.error) throw new Error(ress.error);
-                          CheckoutRequestID=ress.body.CheckoutRequestID;
-                          console.log(ress.body, `${callback_url}/payment-callback/${Order_ID}`,CheckoutRequestID);
-                          res.send(ress.raw_body)
+                        .end(response2 => {
+                          if (response2.error) throw new Error(response2.error);
+                          CheckoutRequestID=response2.body.CheckoutRequestID;
+                          res.send(response2.body)
                           
                         });
-
-              //process payment complete
-
-
-        
-      
-
       })
-
-
-
   });
   
  
@@ -151,26 +141,26 @@ app.post('/payment-callback/1', async(req, res) => {
     // Handle payment callback logic here
     // Verify the payment and update your application's records
     // Respond with a success message
-    stringg = generateTimestamp();
-    strs= `174379${process.env.passkey}${stringg}`
-    base64Stringg = Buffer.from(strs).toString('base64');
+    Timestampstring = generateTimestamp();
+    encodingpassword= `174379${process.env.passkey}${Timestampstring}`
+    base64PasswordEncoded = Buffer.from(encodingpassword).toString('base64');
 
     unirest('POST', 'https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query')
-      .headers({
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${tokken}`
-      })
-      .send(JSON.stringify({
-          "BusinessShortCode": 174379,
-          "Password": base64Stringg,
-          "Timestamp": stringg,
-          "CheckoutRequestID": `${CheckoutRequestID}`,
+        .headers({
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${tokken}`
+        })
+        .send(JSON.stringify({
+            "BusinessShortCode": 174379,
+            "Password": base64PasswordEncoded,
+            "Timestamp": Timestampstring,
+            "CheckoutRequestID": `${CheckoutRequestID}`,
         }))
-      .end(ress => {
-        if (ress.error) throw new Error(ress.error);
-        console.log(ress.body);
-      });
-    //res.status(200).send('Payment received and processed.');
+        .end(response => {
+          if (response.error) throw new Error(response.error);
+          console.log(response.body);
+        });
+    res.status(200).send('Payment received and processed.');
   });
 
 
