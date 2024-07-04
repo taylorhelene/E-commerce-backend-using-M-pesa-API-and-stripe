@@ -163,8 +163,7 @@ app.post('/payment-callback/', async(req, res) => {
     
   });
 
-
-
+//database routes
 app.get('/db', async (req,res) => {
   try {
     res.setHeader('Content-Type', 'application/json');
