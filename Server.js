@@ -100,11 +100,10 @@ app.post('/lipa', async (req, res) => {
 
         }
 
-      //generate token
+      //get token body
       getToken().then(response=>{
-        //parse raw_body
-        console.log(response.body)
-        let jsonstring = JSON.parse(response.raw_body)
+        //get token
+        let jsonstring = response.body
         tokken = jsonstring.access_token;
 
         //process request
@@ -137,7 +136,7 @@ app.post('/lipa', async (req, res) => {
   
  
 
-app.post('/payment-callback/1', async(req, res) => {
+app.post('/payment-callback/', async(req, res) => {
     // Handle payment callback logic here
     // Verify the payment and update your application's records
     // Respond with a success message
@@ -159,8 +158,9 @@ app.post('/payment-callback/1', async(req, res) => {
         .end(response => {
           if (response.error) throw new Error(response.error);
           console.log(response.body);
+          res.status(200).send('Payment processed.');
         });
-    res.status(200).send('Payment received and processed.');
+    
   });
 
 
