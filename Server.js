@@ -40,10 +40,10 @@ const generateTimestamp = () => {
 };
 
 
-
 app.use(express.json()); // Enable parsing JSON request bodies
 
 
+// initialize ngrok;
 
 (async function() {
   console.log("Initializing Ngrok tunnel...");
